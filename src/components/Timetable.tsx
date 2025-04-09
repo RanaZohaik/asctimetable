@@ -17,6 +17,7 @@ interface TimetableProps {
     subjectId: number;
     room: string;
   }) => void;
+  onMoveItem: (itemId: number, newPeriodId: number, newDay: number) => void;
 }
 
 const Timetable: React.FC<TimetableProps> = ({ 
@@ -24,7 +25,8 @@ const Timetable: React.FC<TimetableProps> = ({
   schedule, 
   onRefreshSchedule,
   onDeleteItem,
-  onAddItem
+  onAddItem,
+  onMoveItem
 }) => {
   return (
     <div className="flex-1 p-4 overflow-auto">
@@ -36,7 +38,11 @@ const Timetable: React.FC<TimetableProps> = ({
       
       <div className="bg-white border border-gray-200 rounded-md shadow-md overflow-hidden">
         <TimetableHeader />
-        <TimetableGrid schedule={schedule} onDeleteItem={onDeleteItem} />
+        <TimetableGrid 
+          schedule={schedule} 
+          onDeleteItem={onDeleteItem} 
+          onMoveItem={onMoveItem}
+        />
       </div>
       
       <div className="mt-4 flex flex-wrap gap-2 p-3 bg-gray-100 rounded-md border border-gray-200">

@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import Sidebar from '@/components/Sidebar';
 import Timetable from '@/components/Timetable';
@@ -49,7 +48,6 @@ const Index: React.FC = () => {
     room: string;
   }) => {
     setSchedule((prevSchedule) => {
-      // Check if there's already an item in this slot
       const existingItem = prevSchedule.find(
         (item) => item.periodId === newItem.periodId && item.day === newItem.day
       );
@@ -63,7 +61,6 @@ const Index: React.FC = () => {
         return prevSchedule;
       }
       
-      // Generate a new unique ID
       const maxId = Math.max(...prevSchedule.map((item) => item.id), 0);
       
       const newScheduleItem: ScheduleItem = {
@@ -81,6 +78,43 @@ const Index: React.FC = () => {
     });
   }, [selectedClass, toast]);
 
+  const handleMoveItem = useCallback((itemId: number, newPeriodId: number, newDay: number) => {
+    setSchedule((prevSchedule) => {
+      const itemToMove = prevSchedule.find(item => item.id === itemId);
+      if (!itemToMove) return prevSchedule;
+      
+      const existingItemAtTarget = prevSchedule.find(
+        item => item.periodId === newPeriodId && item.day === newDay
+      );
+      
+      if (existingItemAtTarget) {
+        toast({
+          title: "Cannot Move Card",
+          description: "There's already a schedule item in the target position",
+          variant: "destructive",
+        });
+        return prevSchedule;
+      }
+      
+      const updatedItem = {
+        ...itemToMove,
+        periodId: newPeriodId,
+        day: newDay
+      };
+      
+      const updatedSchedule = prevSchedule.map(item => 
+        item.id === itemId ? updatedItem : item
+      );
+      
+      toast({
+        title: "Card Moved",
+        description: "The schedule item has been moved to a new position",
+      });
+      
+      return updatedSchedule;
+    });
+  }, [toast]);
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar selectedClass={selectedClass} onSelectClass={handleSelectClass} />
@@ -90,6 +124,7 @@ const Index: React.FC = () => {
         onRefreshSchedule={handleRefreshSchedule}
         onDeleteItem={handleDeleteItem}
         onAddItem={handleAddItem}
+        onMoveItem={handleMoveItem}
       />
     </div>
   );
