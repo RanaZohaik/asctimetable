@@ -2,7 +2,7 @@
 import React from 'react';
 import { Subject, Period } from '../data/mockData';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import SubjectCard from './SubjectCard';
+import { X } from 'lucide-react';
 
 interface TimetableCellProps {
   subject?: Subject;
@@ -21,18 +21,26 @@ const TimetableCell: React.FC<TimetableCellProps> = ({ subject, period, room, is
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="timetable-cell border border-gray-200 p-2 min-h-[80px]">
-            <div className="p-1 h-full">
-              <span className="period-marker text-xs block mb-1">{period.name}</span>
-              
-              {subject && (
-                <SubjectCard 
-                  subject={subject} 
-                  room={room} 
-                  time={`${period.startTime}-${period.endTime}`} 
-                  onDelete={onDelete}
-                />
+          <div className={`timetable-cell border border-gray-200 p-2 min-h-[80px] ${subject?.colorClass}`}>
+            <div className="p-1 flex flex-col h-full relative">
+              {onDelete && (
+                <button 
+                  className="absolute top-0 right-0 p-1 text-gray-700 hover:text-red-500 transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete();
+                  }}
+                >
+                  <X size={14} />
+                </button>
               )}
+              <div className="flex justify-between">
+                <span className="period-marker text-xs">{period.name}</span>
+                {room && <span className="text-[10px]">{room}</span>}
+              </div>
+              <div className="text-center flex-grow flex items-center justify-center font-bold">
+                {subject?.code}
+              </div>
             </div>
           </div>
         </TooltipTrigger>
