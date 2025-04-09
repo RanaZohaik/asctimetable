@@ -6,9 +6,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 interface FilterControlsProps {
   selectedClassName: string;
   onRefreshSchedule: () => void;
+  rightControls?: React.ReactNode;
 }
 
-const FilterControls: React.FC<FilterControlsProps> = ({ selectedClassName, onRefreshSchedule }) => {
+const FilterControls: React.FC<FilterControlsProps> = ({ 
+  selectedClassName, 
+  onRefreshSchedule,
+  rightControls
+}) => {
   return (
     <div className="bg-white border border-gray-200 p-3 mb-4 rounded-md shadow-sm">
       <div className="flex items-center justify-between">
@@ -24,6 +29,7 @@ const FilterControls: React.FC<FilterControlsProps> = ({ selectedClassName, onRe
         </div>
         
         <div className="flex items-center space-x-2">
+          {rightControls}
           <Button variant="outline" size="sm" onClick={onRefreshSchedule}>
             Refresh
           </Button>

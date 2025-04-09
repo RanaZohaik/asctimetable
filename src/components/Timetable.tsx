@@ -3,25 +3,40 @@ import React from 'react';
 import TimetableHeader from './TimetableHeader';
 import TimetableGrid from './TimetableGrid';
 import FilterControls from './FilterControls';
+import AddScheduleItem from './AddScheduleItem';
 import { Class, ScheduleItem } from '../data/mockData';
 
 interface TimetableProps {
   selectedClass: Class;
   schedule: ScheduleItem[];
   onRefreshSchedule: () => void;
+  onDeleteItem: (id: number) => void;
+  onAddItem: (newItem: {
+    periodId: number;
+    day: number;
+    subjectId: number;
+    room: string;
+  }) => void;
 }
 
-const Timetable: React.FC<TimetableProps> = ({ selectedClass, schedule, onRefreshSchedule }) => {
+const Timetable: React.FC<TimetableProps> = ({ 
+  selectedClass, 
+  schedule, 
+  onRefreshSchedule,
+  onDeleteItem,
+  onAddItem
+}) => {
   return (
     <div className="flex-1 p-4 overflow-auto">
       <FilterControls 
         selectedClassName={selectedClass.name} 
-        onRefreshSchedule={onRefreshSchedule} 
+        onRefreshSchedule={onRefreshSchedule}
+        rightControls={<AddScheduleItem onAddItem={onAddItem} />}
       />
       
       <div className="bg-white border border-gray-200 rounded-md shadow-md overflow-hidden">
         <TimetableHeader />
-        <TimetableGrid schedule={schedule} />
+        <TimetableGrid schedule={schedule} onDeleteItem={onDeleteItem} />
       </div>
       
       <div className="mt-4 flex flex-wrap gap-2 p-3 bg-gray-100 rounded-md border border-gray-200">
