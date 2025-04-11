@@ -22,8 +22,8 @@ const CardsList: React.FC = () => {
                 </Badge>
               </div>
               <div className="mt-3 text-xs">
-                <p>Weekly Hours: {subject.weeklyHours}</p>
-                <p className="mt-1">Required Rooms: {subject.requiredRoomType || 'Any'}</p>
+                <p>Weekly Hours: {subject.hours || 0}</p>
+                <p className="mt-1">Required Rooms: {subject.roomType || 'Any'}</p>
               </div>
             </CardContent>
           </Card>

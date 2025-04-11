@@ -2,6 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Printer, FileText } from 'lucide-react';
 import CardsList from './CardsList';
 import RoomsList from './RoomsList';
 
@@ -16,6 +17,36 @@ const FilterControls: React.FC<FilterControlsProps> = ({
   onRefreshSchedule,
   rightControls
 }) => {
+  // Function to handle printing
+  const handlePrint = () => {
+    window.print();
+  };
+
+  // Function to handle export (CSV format)
+  const handleExport = () => {
+    // Get the current date and time for the filename
+    const date = new Date();
+    const formattedDate = date.toISOString().split('T')[0];
+    
+    // Create a CSV string with header row
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "Schedule for " + selectedClassName + "\r\n";
+    csvContent += "Exported on " + date.toLocaleString() + "\r\n\r\n";
+    
+    // Create a link element to trigger the download
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `schedule_${selectedClassName}_${formattedDate}.csv`);
+    document.body.appendChild(link);
+    
+    // Trigger the download
+    link.click();
+    
+    // Clean up
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="bg-white border border-gray-200 p-3 mb-4 rounded-md shadow-sm">
       <div className="flex items-center justify-between mb-3">
@@ -28,10 +59,12 @@ const FilterControls: React.FC<FilterControlsProps> = ({
           <Button variant="outline" size="sm" onClick={onRefreshSchedule}>
             Refresh
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handlePrint}>
+            <Printer className="mr-1 h-4 w-4" />
             Print
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleExport}>
+            <FileText className="mr-1 h-4 w-4" />
             Export
           </Button>
         </div>
