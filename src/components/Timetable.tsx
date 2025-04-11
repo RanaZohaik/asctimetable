@@ -4,7 +4,7 @@ import TimetableHeader from './TimetableHeader';
 import TimetableGrid from './TimetableGrid';
 import FilterControls from './FilterControls';
 import AddScheduleItem from './AddScheduleItem';
-import { Class, ScheduleItem } from '../data/mockData';
+import { Class, ScheduleItem, Subject } from '../data/mockData';
 
 interface TimetableProps {
   selectedClass: Class;
@@ -18,6 +18,9 @@ interface TimetableProps {
     room: string;
   }) => void;
   onMoveItem: (itemId: number, newPeriodId: number, newDay: number) => void;
+  onAddSubject?: (subjectData: Omit<Subject, 'id'>) => void;
+  onEditSubject?: (id: number, subjectData: Omit<Subject, 'id'>) => void;
+  onDeleteSubject?: (id: number) => void;
 }
 
 const Timetable: React.FC<TimetableProps> = ({ 
@@ -26,7 +29,10 @@ const Timetable: React.FC<TimetableProps> = ({
   onRefreshSchedule,
   onDeleteItem,
   onAddItem,
-  onMoveItem
+  onMoveItem,
+  onAddSubject,
+  onEditSubject,
+  onDeleteSubject
 }) => {
   return (
     <div className="flex-1 p-4 overflow-auto">
@@ -34,6 +40,9 @@ const Timetable: React.FC<TimetableProps> = ({
         selectedClassName={selectedClass.name} 
         onRefreshSchedule={onRefreshSchedule}
         rightControls={<AddScheduleItem onAddItem={onAddItem} />}
+        onAddSubject={onAddSubject}
+        onEditSubject={onEditSubject}
+        onDeleteSubject={onDeleteSubject}
       />
       
       <div className="bg-white border border-gray-200 rounded-md shadow-md overflow-hidden">

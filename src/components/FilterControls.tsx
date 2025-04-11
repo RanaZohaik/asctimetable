@@ -5,17 +5,24 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Printer, FileText } from 'lucide-react';
 import CardsList from './CardsList';
 import RoomsList from './RoomsList';
+import { Subject } from '@/data/mockData';
 
 interface FilterControlsProps {
   selectedClassName: string;
   onRefreshSchedule: () => void;
   rightControls?: React.ReactNode;
+  onAddSubject?: (subjectData: Omit<Subject, 'id'>) => void;
+  onEditSubject?: (id: number, subjectData: Omit<Subject, 'id'>) => void;
+  onDeleteSubject?: (id: number) => void;
 }
 
 const FilterControls: React.FC<FilterControlsProps> = ({ 
   selectedClassName, 
   onRefreshSchedule,
-  rightControls
+  rightControls,
+  onAddSubject,
+  onEditSubject,
+  onDeleteSubject
 }) => {
   // Function to handle printing
   const handlePrint = () => {
@@ -82,7 +89,11 @@ const FilterControls: React.FC<FilterControlsProps> = ({
         </TabsContent>
         
         <TabsContent value="cards">
-          <CardsList />
+          <CardsList 
+            onAddSubject={onAddSubject}
+            onEditSubject={onEditSubject}
+            onDeleteSubject={onDeleteSubject}
+          />
         </TabsContent>
         
         <TabsContent value="rooms">

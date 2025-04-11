@@ -1,10 +1,11 @@
-
 export interface Subject {
   id: number;
   code: string;
   name: string;
   teacher: string;
   colorClass: string;
+  hours?: number;
+  roomType?: string;
 }
 
 export interface Class {
@@ -31,21 +32,21 @@ export interface ScheduleItem {
 
 // Mock data for subjects
 export const subjects: Subject[] = [
-  { id: 1, code: "Ma", name: "Mathematics", teacher: "Mr. Smith", colorClass: "subject-color-1" },
-  { id: 2, code: "En", name: "English", teacher: "Ms. Johnson", colorClass: "subject-color-2" },
-  { id: 3, code: "Ph", name: "Physics", teacher: "Dr. Brown", colorClass: "subject-color-3" },
-  { id: 4, code: "Ch", name: "Chemistry", teacher: "Mrs. Davis", colorClass: "subject-color-4" },
-  { id: 5, code: "Bi", name: "Biology", teacher: "Mr. Wilson", colorClass: "subject-color-5" },
-  { id: 6, code: "Hi", name: "History", teacher: "Ms. Lee", colorClass: "subject-color-6" },
-  { id: 7, code: "Ge", name: "Geography", teacher: "Mr. Anderson", colorClass: "subject-color-7" },
-  { id: 8, code: "PE", name: "Physical Education", teacher: "Mr. Garcia", colorClass: "subject-color-8" },
-  { id: 9, code: "Ar", name: "Art", teacher: "Ms. Martinez", colorClass: "subject-color-9" },
-  { id: 10, code: "Mu", name: "Music", teacher: "Mrs. Taylor", colorClass: "subject-color-10" },
-  { id: 11, code: "CS", name: "Computer Science", teacher: "Mr. Thomas", colorClass: "subject-color-11" },
-  { id: 12, code: "Fr", name: "French", teacher: "Mme. Dubois", colorClass: "subject-color-12" },
-  { id: 13, code: "Sp", name: "Spanish", teacher: "Sr. Rodriguez", colorClass: "subject-color-13" },
-  { id: 14, code: "Dr", name: "Drama", teacher: "Ms. White", colorClass: "subject-color-14" },
-  { id: 15, code: "Ec", name: "Economics", teacher: "Dr. Clark", colorClass: "subject-color-15" },
+  { id: 1, code: "Ma", name: "Mathematics", teacher: "Mr. Smith", colorClass: "subject-color-1", hours: 4, roomType: "Standard" },
+  { id: 2, code: "En", name: "English", teacher: "Ms. Johnson", colorClass: "subject-color-2", hours: 5, roomType: "Standard" },
+  { id: 3, code: "Ph", name: "Physics", teacher: "Dr. Brown", colorClass: "subject-color-3", hours: 3, roomType: "Lab" },
+  { id: 4, code: "Ch", name: "Chemistry", teacher: "Mrs. Davis", colorClass: "subject-color-4", hours: 3, roomType: "Lab" },
+  { id: 5, code: "Bi", name: "Biology", teacher: "Mr. Wilson", colorClass: "subject-color-5", hours: 3, roomType: "Lab" },
+  { id: 6, code: "Hi", name: "History", teacher: "Ms. Lee", colorClass: "subject-color-6", hours: 2, roomType: "Standard" },
+  { id: 7, code: "Ge", name: "Geography", teacher: "Mr. Anderson", colorClass: "subject-color-7", hours: 2, roomType: "Standard" },
+  { id: 8, code: "PE", name: "Physical Education", teacher: "Mr. Garcia", colorClass: "subject-color-8", hours: 2, roomType: "Gym" },
+  { id: 9, code: "Ar", name: "Art", teacher: "Ms. Martinez", colorClass: "subject-color-9", hours: 2, roomType: "Art Studio" },
+  { id: 10, code: "Mu", name: "Music", teacher: "Mrs. Taylor", colorClass: "subject-color-10", hours: 2, roomType: "Music Room" },
+  { id: 11, code: "CS", name: "Computer Science", teacher: "Mr. Thomas", colorClass: "subject-color-11", hours: 3, roomType: "Computer Lab" },
+  { id: 12, code: "Fr", name: "French", teacher: "Mme. Dubois", colorClass: "subject-color-12", hours: 3, roomType: "Standard" },
+  { id: 13, code: "Sp", name: "Spanish", teacher: "Sr. Rodriguez", colorClass: "subject-color-13", hours: 3, roomType: "Standard" },
+  { id: 14, code: "Dr", name: "Drama", teacher: "Ms. White", colorClass: "subject-color-14", hours: 2, roomType: "Theatre" },
+  { id: 15, code: "Ec", name: "Economics", teacher: "Dr. Clark", colorClass: "subject-color-15", hours: 3, roomType: "Standard" },
 ];
 
 // Mock data for classes

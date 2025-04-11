@@ -1,13 +1,53 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { classes, Class } from '../data/mockData';
+import { Button } from '@/components/ui/button';
+import { Plus, Edit, Trash2 } from 'lucide-react';
+import ClassForm from './ClassForm';
 
 interface SidebarProps {
   selectedClass: Class | null;
   onSelectClass: (classItem: Class) => void;
+  onAddClass?: (classData: Omit<Class, 'id'>) => void;
+  onEditClass?: (id: number, classData: Omit<Class, 'id'>) => void;
+  onDeleteClass?: (id: number) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ selectedClass, onSelectClass }) => {
+const Sidebar: React.FC<SidebarProps> = ({ 
+  selectedClass, 
+  onSelectClass,
+  onAddClass,
+  onEditClass,
+  onDeleteClass
+}) => {
+  const [isAddClassDialogOpen, setIsAddClassDialogOpen] = useState(false);
+  const [editClassData, setEditClassData] = useState<Class | null>(null);
+
+  const handleAddClass = () => {
+    setIsAddClassDialogOpen(true);
+  };
+
+  const handleEditClass = (classItem: Class, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditClassData(classItem);
+  };
+
+  const handleDeleteClass = (id: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onDeleteClass && window.confirm('Are you sure you want to delete this class?')) {
+      onDeleteClass(id);
+    }
+  };
+
+  const handleSaveClass = (classData: Omit<Class, 'id'>) => {
+    if (editClassData && onEditClass) {
+      onEditClass(editClassData.id, classData);
+      setEditClassData(null);
+    } else if (onAddClass) {
+      onAddClass(classData);
+    }
+  };
+
   return (
     <div className="bg-sidebar w-56 min-h-screen border-r border-sidebar-border flex flex-col">
       <div className="p-4 border-b border-sidebar-border">
@@ -16,20 +56,62 @@ const Sidebar: React.FC<SidebarProps> = ({ selectedClass, onSelectClass }) => {
       </div>
       
       <div className="p-4 border-b border-sidebar-border">
-        <h3 className="text-sm font-semibold mb-2 text-sidebar-foreground">Classes</h3>
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-sm font-semibold text-sidebar-foreground">Classes</h3>
+          {onAddClass && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-7 w-7 p-0" 
+              onClick={handleAddClass}
+            >
+              <Plus className="h-4 w-4" />
+              <span className="sr-only">Add Class</span>
+            </Button>
+          )}
+        </div>
+        
         <div className="space-y-1">
           {classes.map((classItem) => (
-            <button
-              key={classItem.id}
-              onClick={() => onSelectClass(classItem)}
-              className={`w-full text-left px-3 py-2 rounded-md text-sm ${
-                selectedClass?.id === classItem.id
-                  ? 'bg-sidebar-primary text-sidebar-primary-foreground'
-                  : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
-              }`}
+            <div 
+              key={classItem.id} 
+              className="flex items-center justify-between"
             >
-              {classItem.name}
-            </button>
+              <button
+                onClick={() => onSelectClass(classItem)}
+                className={`flex-grow text-left px-3 py-2 rounded-md text-sm ${
+                  selectedClass?.id === classItem.id
+                    ? 'bg-sidebar-primary text-sidebar-primary-foreground'
+                    : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                }`}
+              >
+                {classItem.name}
+              </button>
+              
+              {onEditClass && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-7 w-7 p-0 ml-1" 
+                  onClick={(e) => handleEditClass(classItem, e)}
+                >
+                  <Edit className="h-3 w-3" />
+                  <span className="sr-only">Edit</span>
+                </Button>
+              )}
+              
+              {onDeleteClass && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-7 w-7 p-0" 
+                  onClick={(e) => handleDeleteClass(classItem.id, e)}
+                >
+                  <Trash2 className="h-3 w-3 text-destructive" />
+                  <span className="sr-only">Delete</span>
+                </Button>
+              )}
+            </div>
           ))}
         </div>
       </div>
@@ -38,6 +120,20 @@ const Sidebar: React.FC<SidebarProps> = ({ selectedClass, onSelectClass }) => {
         <div className="font-medium">Demo: Basic</div>
         <div className="mt-1 opacity-75">ⓒ 2025 ASC Schedule Buddy</div>
       </div>
+      
+      {/* Class Forms */}
+      <ClassForm 
+        isOpen={isAddClassDialogOpen} 
+        onClose={() => setIsAddClassDialogOpen(false)} 
+        onSave={handleSaveClass} 
+      />
+      
+      <ClassForm 
+        isOpen={!!editClassData} 
+        onClose={() => setEditClassData(null)} 
+        onSave={handleSaveClass} 
+        initialData={editClassData || undefined} 
+      />
     </div>
   );
 };
