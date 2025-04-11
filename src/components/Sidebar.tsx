@@ -1,9 +1,19 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { classes, Class } from '../data/mockData';
 import { Button } from '@/components/ui/button';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import ClassForm from './ClassForm';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface SidebarProps {
   selectedClass: Class | null;
@@ -22,6 +32,8 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const [isAddClassDialogOpen, setIsAddClassDialogOpen] = useState(false);
   const [editClassData, setEditClassData] = useState<Class | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [classToDelete, setClassToDelete] = useState<number | null>(null);
 
   const handleAddClass = () => {
     setIsAddClassDialogOpen(true);
@@ -34,9 +46,16 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const handleDeleteClass = (id: number, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (onDeleteClass && window.confirm('Are you sure you want to delete this class?')) {
-      onDeleteClass(id);
+    setClassToDelete(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDeleteClass = () => {
+    if (onDeleteClass && classToDelete !== null) {
+      onDeleteClass(classToDelete);
     }
+    setDeleteConfirmOpen(false);
+    setClassToDelete(null);
   };
 
   const handleSaveClass = (classData: Omit<Class, 'id'>) => {
@@ -134,6 +153,25 @@ const Sidebar: React.FC<SidebarProps> = ({
         onSave={handleSaveClass} 
         initialData={editClassData || undefined} 
       />
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the class
+              and remove it from the system.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDeleteClass} className="bg-destructive text-destructive-foreground">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

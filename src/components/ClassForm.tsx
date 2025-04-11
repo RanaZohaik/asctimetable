@@ -1,10 +1,11 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Class } from '@/data/mockData';
+import { useToast } from '@/hooks/use-toast';
 
 interface ClassFormProps {
   isOpen: boolean;
@@ -21,6 +22,15 @@ const ClassForm: React.FC<ClassFormProps> = ({
 }) => {
   const [name, setName] = useState(initialData?.name || '');
   const [grade, setGrade] = useState(initialData?.grade || '');
+  const { toast } = useToast();
+
+  // Reset form when initialData changes
+  useEffect(() => {
+    if (isOpen) {
+      setName(initialData?.name || '');
+      setGrade(initialData?.grade || '');
+    }
+  }, [isOpen, initialData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,6 +38,11 @@ const ClassForm: React.FC<ClassFormProps> = ({
     onSave({
       name,
       grade
+    });
+    
+    toast({
+      title: initialData ? "Class Updated" : "Class Added",
+      description: `${name} has been ${initialData ? "updated" : "added"} successfully`,
     });
     
     // Reset form

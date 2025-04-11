@@ -7,6 +7,16 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import SubjectForm from './SubjectForm';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface CardsListProps {
   onAddSubject?: (subjectData: Omit<Subject, 'id'>) => void;
@@ -21,6 +31,8 @@ const CardsList: React.FC<CardsListProps> = ({
 }) => {
   const [isAddSubjectDialogOpen, setIsAddSubjectDialogOpen] = useState(false);
   const [editSubjectData, setEditSubjectData] = useState<Subject | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [subjectToDelete, setSubjectToDelete] = useState<number | null>(null);
 
   const handleAddSubject = () => {
     setIsAddSubjectDialogOpen(true);
@@ -31,9 +43,16 @@ const CardsList: React.FC<CardsListProps> = ({
   };
 
   const handleDeleteSubject = (id: number) => {
-    if (onDeleteSubject && window.confirm('Are you sure you want to delete this subject?')) {
-      onDeleteSubject(id);
+    setSubjectToDelete(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDeleteSubject = () => {
+    if (onDeleteSubject && subjectToDelete !== null) {
+      onDeleteSubject(subjectToDelete);
     }
+    setDeleteConfirmOpen(false);
+    setSubjectToDelete(null);
   };
 
   const handleSaveSubject = (subjectData: Omit<Subject, 'id'>) => {
@@ -127,6 +146,25 @@ const CardsList: React.FC<CardsListProps> = ({
         onSave={handleSaveSubject} 
         initialData={editSubjectData || undefined} 
       />
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the subject
+              and remove it from all schedules.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDeleteSubject} className="bg-destructive text-destructive-foreground">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

@@ -1,21 +1,71 @@
-
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Sidebar from '@/components/Sidebar';
 import Timetable from '@/components/Timetable';
-import { classes, Class, subjects, Subject, generateSchedule, defaultSchedule, ScheduleItem } from '@/data/mockData';
+import { classes as initialClasses, Class, subjects as initialSubjects, Subject, generateSchedule, defaultSchedule, ScheduleItem } from '@/data/mockData';
 import { useToast } from '@/hooks/use-toast';
 
+const STORAGE_KEYS = {
+  CLASSES: 'asc-schedule-classes',
+  SUBJECTS: 'asc-schedule-subjects',
+  SCHEDULE: 'asc-schedule-items',
+  SELECTED_CLASS: 'asc-selected-class'
+};
+
 const Index: React.FC = () => {
-  const [selectedClass, setSelectedClass] = useState<Class>(classes[0]);
-  const [schedule, setSchedule] = useState<ScheduleItem[]>(defaultSchedule);
-  const [localClasses, setLocalClasses] = useState<Class[]>(classes);
-  const [localSubjects, setLocalSubjects] = useState<Subject[]>(subjects);
+  const [localClasses, setLocalClasses] = useState<Class[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.CLASSES);
+    return saved ? JSON.parse(saved) : initialClasses;
+  });
+  
+  const [localSubjects, setLocalSubjects] = useState<Subject[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.SUBJECTS);
+    return saved ? JSON.parse(saved) : initialSubjects;
+  });
+  
+  const [selectedClass, setSelectedClass] = useState<Class>(() => {
+    const savedId = localStorage.getItem(STORAGE_KEYS.SELECTED_CLASS);
+    const selectedId = savedId ? parseInt(savedId) : null;
+    return selectedId 
+      ? localClasses.find(c => c.id === selectedId) || localClasses[0] 
+      : localClasses[0];
+  });
+  
+  const [schedule, setSchedule] = useState<ScheduleItem[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.SCHEDULE);
+    return saved ? JSON.parse(saved) : defaultSchedule;
+  });
+  
   const { toast } = useToast();
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.CLASSES, JSON.stringify(localClasses));
+  }, [localClasses]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.SUBJECTS, JSON.stringify(localSubjects));
+  }, [localSubjects]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.SCHEDULE, JSON.stringify(schedule));
+  }, [schedule]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.SELECTED_CLASS, String(selectedClass.id));
+  }, [selectedClass]);
 
   const handleSelectClass = useCallback((classItem: Class) => {
     setSelectedClass(classItem);
-    const newSchedule = generateSchedule(classItem.id);
-    setSchedule(newSchedule);
+    const savedSchedule = localStorage.getItem(STORAGE_KEYS.SCHEDULE);
+    const classSchedule = savedSchedule 
+      ? JSON.parse(savedSchedule).filter((item: ScheduleItem) => item.classId === classItem.id)
+      : [];
+    
+    if (classSchedule.length > 0) {
+      setSchedule(classSchedule);
+    } else {
+      const newSchedule = generateSchedule(classItem.id);
+      setSchedule(newSchedule);
+    }
     
     toast({
       title: "Class Schedule Loaded",
@@ -118,7 +168,6 @@ const Index: React.FC = () => {
     });
   }, [toast]);
 
-  // Class CRUD operations
   const handleAddClass = useCallback((classData: Omit<Class, 'id'>) => {
     setLocalClasses(prevClasses => {
       const maxId = Math.max(...prevClasses.map(c => c.id), 0);
@@ -137,7 +186,6 @@ const Index: React.FC = () => {
       prevClasses.map(c => c.id === id ? { ...classData, id } : c)
     );
     
-    // If the edited class is the currently selected one, update selectedClass
     if (selectedClass.id === id) {
       setSelectedClass(prev => ({ ...classData, id }));
     }
@@ -151,7 +199,6 @@ const Index: React.FC = () => {
   const handleDeleteClass = useCallback((id: number) => {
     setLocalClasses(prevClasses => prevClasses.filter(c => c.id !== id));
     
-    // If deleted class is currently selected, select the first available class
     if (selectedClass.id === id) {
       const remainingClasses = localClasses.filter(c => c.id !== id);
       if (remainingClasses.length > 0) {
@@ -159,13 +206,16 @@ const Index: React.FC = () => {
       }
     }
     
+    setSchedule(prevSchedule => 
+      prevSchedule.filter(item => item.classId !== id)
+    );
+    
     toast({
       title: "Class Deleted",
       description: "The class has been removed",
     });
   }, [selectedClass, localClasses, handleSelectClass, toast]);
 
-  // Subject CRUD operations
   const handleAddSubject = useCallback((subjectData: Omit<Subject, 'id'>) => {
     setLocalSubjects(prevSubjects => {
       const maxId = Math.max(...prevSubjects.map(s => s.id), 0);
@@ -193,7 +243,6 @@ const Index: React.FC = () => {
   const handleDeleteSubject = useCallback((id: number) => {
     setLocalSubjects(prevSubjects => prevSubjects.filter(s => s.id !== id));
     
-    // Remove schedule items that use this subject
     setSchedule(prevSchedule => 
       prevSchedule.filter(item => item.subjectId !== id)
     );
