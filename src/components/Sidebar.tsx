@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { classes, Class } from '../data/mockData';
 import { Button } from '@/components/ui/button';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Save } from 'lucide-react';
 import ClassForm from './ClassForm';
 import {
   AlertDialog,
@@ -52,7 +52,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const confirmDeleteClass = () => {
     if (onDeleteClass && classToDelete !== null) {
-      // Ensure the delete is saved immediately
+      // Ensure the delete is saved immediately to localStorage
       onDeleteClass(classToDelete);
     }
     setDeleteConfirmOpen(false);
@@ -61,11 +61,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const handleSaveClass = (classData: Omit<Class, 'id'>) => {
     if (editClassData && onEditClass) {
-      // Ensure the edit is saved immediately
+      // Ensure the edit is saved immediately to localStorage
       onEditClass(editClassData.id, classData);
       setEditClassData(null);
     } else if (onAddClass) {
-      // Ensure the new class is saved immediately
+      // Ensure the new class is saved immediately to localStorage
       onAddClass(classData);
     }
   };
@@ -86,6 +86,7 @@ const Sidebar: React.FC<SidebarProps> = ({
               size="sm" 
               className="h-7 w-7 p-0" 
               onClick={handleAddClass}
+              title="Add New Class"
             >
               <Plus className="h-4 w-4" />
               <span className="sr-only">Add Class</span>
@@ -116,6 +117,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   size="sm" 
                   className="h-7 w-7 p-0 ml-1" 
                   onClick={(e) => handleEditClass(classItem, e)}
+                  title="Edit Class"
                 >
                   <Edit className="h-3 w-3" />
                   <span className="sr-only">Edit</span>
@@ -128,6 +130,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   size="sm" 
                   className="h-7 w-7 p-0" 
                   onClick={(e) => handleDeleteClass(classItem.id, e)}
+                  title="Delete Class"
                 >
                   <Trash2 className="h-3 w-3 text-destructive" />
                   <span className="sr-only">Delete</span>

@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -35,7 +35,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Save immediately
+    // Save changes immediately to localStorage
     onSave({
       name,
       grade
@@ -57,6 +57,9 @@ const ClassForm: React.FC<ClassFormProps> = ({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{initialData ? 'Edit Class' : 'Add New Class'}</DialogTitle>
+          <DialogDescription>
+            Changes will be saved automatically.
+          </DialogDescription>
         </DialogHeader>
         
         <form onSubmit={handleSubmit}>
@@ -86,7 +89,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
           
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
-            <Button type="submit">{initialData ? 'Update' : 'Add'}</Button>
+            <Button type="submit">{initialData ? 'Save Changes' : 'Save'}</Button>
           </DialogFooter>
         </form>
       </DialogContent>
