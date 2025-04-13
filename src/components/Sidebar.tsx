@@ -172,7 +172,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDeleteSubject} className="bg-destructive text-destructive-foreground">
+            <AlertDialogAction onClick={confirmDeleteClass} className="bg-destructive text-destructive-foreground">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
