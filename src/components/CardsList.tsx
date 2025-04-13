@@ -49,7 +49,7 @@ const CardsList: React.FC<CardsListProps> = ({
 
   const confirmDeleteSubject = () => {
     if (onDeleteSubject && subjectToDelete !== null) {
-      // Ensure delete is saved immediately
+      // Ensure delete is saved immediately to localStorage
       onDeleteSubject(subjectToDelete);
     }
     setDeleteConfirmOpen(false);
@@ -58,11 +58,11 @@ const CardsList: React.FC<CardsListProps> = ({
 
   const handleSaveSubject = (subjectData: Omit<Subject, 'id'>) => {
     if (editSubjectData && onEditSubject) {
-      // Ensure edit is saved immediately
+      // Ensure edit is saved immediately to localStorage
       onEditSubject(editSubjectData.id, subjectData);
       setEditSubjectData(null);
     } else if (onAddSubject) {
-      // Ensure new subject is saved immediately
+      // Ensure new subject is saved immediately to localStorage
       onAddSubject(subjectData);
     }
   };
@@ -76,6 +76,7 @@ const CardsList: React.FC<CardsListProps> = ({
             size="sm" 
             onClick={handleAddSubject}
             className="flex items-center"
+            title="Add New Subject"
           >
             <Plus className="h-4 w-4 mr-1" />
             Add Subject
@@ -111,6 +112,7 @@ const CardsList: React.FC<CardsListProps> = ({
                         size="sm" 
                         onClick={() => handleEditSubject(subject)}
                         className="h-7 w-7 p-0 bg-white/30 hover:bg-white/50"
+                        title="Edit Subject"
                       >
                         <Edit className="h-3 w-3" />
                         <span className="sr-only">Edit</span>
@@ -123,6 +125,7 @@ const CardsList: React.FC<CardsListProps> = ({
                         size="sm" 
                         onClick={() => handleDeleteSubject(subject.id)}
                         className="h-7 w-7 p-0 bg-white/30 hover:bg-white/50"
+                        title="Delete Subject"
                       >
                         <Trash2 className="h-3 w-3 text-destructive" />
                         <span className="sr-only">Delete</span>

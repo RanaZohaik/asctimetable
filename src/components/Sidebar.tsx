@@ -1,8 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { classes, Class } from '../data/mockData';
 import { Button } from '@/components/ui/button';
-import { Plus, Edit, Trash2, Save } from 'lucide-react';
+import { Plus, Edit, Trash2 } from 'lucide-react';
 import ClassForm from './ClassForm';
 import {
   AlertDialog,
@@ -172,7 +172,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDeleteClass} className="bg-destructive text-destructive-foreground">
+            <AlertDialogAction onClick={confirmDeleteSubject} className="bg-destructive text-destructive-foreground">
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
