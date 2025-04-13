@@ -52,6 +52,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const confirmDeleteClass = () => {
     if (onDeleteClass && classToDelete !== null) {
+      // Ensure the delete is saved immediately
       onDeleteClass(classToDelete);
     }
     setDeleteConfirmOpen(false);
@@ -60,9 +61,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const handleSaveClass = (classData: Omit<Class, 'id'>) => {
     if (editClassData && onEditClass) {
+      // Ensure the edit is saved immediately
       onEditClass(editClassData.id, classData);
       setEditClassData(null);
     } else if (onAddClass) {
+      // Ensure the new class is saved immediately
       onAddClass(classData);
     }
   };

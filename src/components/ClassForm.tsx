@@ -35,6 +35,7 @@ const ClassForm: React.FC<ClassFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Save immediately
     onSave({
       name,
       grade

@@ -49,6 +49,7 @@ const CardsList: React.FC<CardsListProps> = ({
 
   const confirmDeleteSubject = () => {
     if (onDeleteSubject && subjectToDelete !== null) {
+      // Ensure delete is saved immediately
       onDeleteSubject(subjectToDelete);
     }
     setDeleteConfirmOpen(false);
@@ -57,9 +58,11 @@ const CardsList: React.FC<CardsListProps> = ({
 
   const handleSaveSubject = (subjectData: Omit<Subject, 'id'>) => {
     if (editSubjectData && onEditSubject) {
+      // Ensure edit is saved immediately
       onEditSubject(editSubjectData.id, subjectData);
       setEditSubjectData(null);
     } else if (onAddSubject) {
+      // Ensure new subject is saved immediately
       onAddSubject(subjectData);
     }
   };
