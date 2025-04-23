@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { subjects, Subject } from '../data/mockData';
 import { Card, CardContent } from '@/components/ui/card';
@@ -17,6 +16,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useToast } from '@/components/ui/use-toast';
 
 interface CardsListProps {
   onAddSubject?: (subjectData: Omit<Subject, 'id'>) => void;
@@ -33,6 +33,11 @@ const CardsList: React.FC<CardsListProps> = ({
   const [editSubjectData, setEditSubjectData] = useState<Subject | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [subjectToDelete, setSubjectToDelete] = useState<number | null>(null);
+  const { toast } = useToast();
+  const [localSubjects, setLocalSubjects] = useState(() => {
+    const saved = localStorage.getItem('asc-schedule-subjects');
+    return saved ? JSON.parse(saved) : subjects;
+  });
 
   const handleAddSubject = () => {
     setIsAddSubjectDialogOpen(true);
@@ -49,8 +54,12 @@ const CardsList: React.FC<CardsListProps> = ({
 
   const confirmDeleteSubject = () => {
     if (onDeleteSubject && subjectToDelete !== null) {
-      // Ensure delete is saved immediately to localStorage
       onDeleteSubject(subjectToDelete);
+      setLocalSubjects(prevSubjects => prevSubjects.filter(s => s.id !== subjectToDelete));
+      toast({
+        title: "Subject Deleted",
+        description: "The subject has been removed successfully",
+      });
     }
     setDeleteConfirmOpen(false);
     setSubjectToDelete(null);
@@ -58,13 +67,25 @@ const CardsList: React.FC<CardsListProps> = ({
 
   const handleSaveSubject = (subjectData: Omit<Subject, 'id'>) => {
     if (editSubjectData && onEditSubject) {
-      // Ensure edit is saved immediately to localStorage
       onEditSubject(editSubjectData.id, subjectData);
+      setLocalSubjects(prevSubjects =>
+        prevSubjects.map(s => s.id === editSubjectData.id ? { ...subjectData, id: editSubjectData.id } : s)
+      );
       setEditSubjectData(null);
+      toast({
+        title: "Subject Updated",
+        description: `${subjectData.name} has been updated successfully`,
+      });
     } else if (onAddSubject) {
-      // Ensure new subject is saved immediately to localStorage
       onAddSubject(subjectData);
+      const newSubject = { ...subjectData, id: Math.max(...localSubjects.map(s => s.id), 0) + 1 };
+      setLocalSubjects(prevSubjects => [...prevSubjects, newSubject]);
+      toast({
+        title: "Subject Added",
+        description: `${subjectData.name} has been added successfully`,
+      });
     }
+    setIsAddSubjectDialogOpen(false);
   };
 
   return (
@@ -86,7 +107,7 @@ const CardsList: React.FC<CardsListProps> = ({
       
       <ScrollArea className="h-60">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-2">
-          {subjects.map((subject) => (
+          {localSubjects.map((subject) => (
             <Card key={subject.id} className={`${subject.colorClass} hover:shadow-md transition-shadow relative group`}>
               <CardContent className="p-4">
                 <div className="flex justify-between items-start">
@@ -139,7 +160,6 @@ const CardsList: React.FC<CardsListProps> = ({
         </div>
       </ScrollArea>
       
-      {/* Subject Forms */}
       <SubjectForm 
         isOpen={isAddSubjectDialogOpen} 
         onClose={() => setIsAddSubjectDialogOpen(false)} 
@@ -153,7 +173,6 @@ const CardsList: React.FC<CardsListProps> = ({
         initialData={editSubjectData || undefined} 
       />
 
-      {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>

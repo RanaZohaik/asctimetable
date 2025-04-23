@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { classes as initialClasses, Class } from '../data/mockData';
 import { Button } from '@/components/ui/button';
@@ -36,13 +35,16 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [classToDelete, setClassToDelete] = useState<number | null>(null);
   const { toast } = useToast();
+  const [localClasses, setLocalClasses] = useState(() => {
+    const saved = localStorage.getItem('asc-schedule-classes');
+    return saved ? JSON.parse(saved) : initialClasses;
+  });
 
   const handleAddClass = () => {
     setIsAddClassDialogOpen(true);
   };
 
-  const handleEditClass = (classItem: Class, e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleEditClass = (classItem: Class) => {
     setEditClassData(classItem);
   };
 
@@ -55,6 +57,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const confirmDeleteClass = () => {
     if (onDeleteClass && classToDelete !== null) {
       onDeleteClass(classToDelete);
+      setLocalClasses(prevClasses => prevClasses.filter(c => c.id !== classToDelete));
       toast({
         title: "Class Deleted",
         description: "The class has been removed successfully",
@@ -67,6 +70,9 @@ const Sidebar: React.FC<SidebarProps> = ({
   const handleSaveClass = (classData: Omit<Class, 'id'>) => {
     if (editClassData && onEditClass) {
       onEditClass(editClassData.id, classData);
+      setLocalClasses(prevClasses =>
+        prevClasses.map(c => c.id === editClassData.id ? { ...classData, id: editClassData.id } : c)
+      );
       setEditClassData(null);
       toast({
         title: "Class Updated",
@@ -74,6 +80,8 @@ const Sidebar: React.FC<SidebarProps> = ({
       });
     } else if (onAddClass) {
       onAddClass(classData);
+      const newClass = { ...classData, id: Math.max(...localClasses.map(c => c.id), 0) + 1 };
+      setLocalClasses(prevClasses => [...prevClasses, newClass]);
       toast({
         title: "Class Added",
         description: `${classData.name} has been added successfully`,
@@ -107,7 +115,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </div>
         
         <div className="space-y-1">
-          {initialClasses.map((classItem) => (
+          {localClasses.map((classItem) => (
             <div 
               key={classItem.id} 
               className="flex items-center justify-between"
@@ -128,7 +136,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   variant="ghost" 
                   size="sm" 
                   className="h-7 w-7 p-0 ml-1" 
-                  onClick={(e) => handleEditClass(classItem, e)}
+                  onClick={() => handleEditClass(classItem)}
                   title="Edit Class"
                 >
                   <Edit className="h-3 w-3" />
@@ -158,7 +166,6 @@ const Sidebar: React.FC<SidebarProps> = ({
         <div className="mt-1 opacity-75">ⓒ 2025 ASC Schedule Buddy</div>
       </div>
       
-      {/* Class Forms */}
       <ClassForm 
         isOpen={isAddClassDialogOpen} 
         onClose={() => setIsAddClassDialogOpen(false)} 
@@ -172,14 +179,13 @@ const Sidebar: React.FC<SidebarProps> = ({
         initialData={editClassData || undefined} 
       />
 
-      {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
               This action cannot be undone. This will permanently delete the class
-              and remove it from the system.
+              and remove it from all schedules.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

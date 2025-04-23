@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -7,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Edit, Trash2, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-// Define Room interface
 interface Room {
   id: number;
   name: string;
@@ -16,7 +14,6 @@ interface Room {
   features: string[];
 }
 
-// Mock rooms data since it's not available in mockData
 const initialRooms = [
   { id: 1, name: "Room 101", type: "Classroom", capacity: 30, features: ["Projector", "Whiteboard"] },
   { id: 2, name: "Room 102", type: "Laboratory", capacity: 25, features: ["Computers", "Microscopes"] },
@@ -38,7 +35,6 @@ const RoomsList: React.FC = () => {
   });
   const { toast } = useToast();
 
-  // Save rooms to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(rooms));
   }, [rooms]);
@@ -80,7 +76,6 @@ const RoomsList: React.FC = () => {
                 </div>
               </div>
               
-              {/* Room Actions */}
               <div className="absolute top-2 right-2 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 <Button 
                   variant="ghost" 
