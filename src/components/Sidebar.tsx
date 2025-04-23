@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { classes, Class } from '../data/mockData';
+import { classes as initialClasses, Class } from '../data/mockData';
 import { Button } from '@/components/ui/button';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import ClassForm from './ClassForm';
@@ -14,6 +14,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
 
 interface SidebarProps {
   selectedClass: Class | null;
@@ -34,6 +35,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const [editClassData, setEditClassData] = useState<Class | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [classToDelete, setClassToDelete] = useState<number | null>(null);
+  const { toast } = useToast();
 
   const handleAddClass = () => {
     setIsAddClassDialogOpen(true);
@@ -52,8 +54,11 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const confirmDeleteClass = () => {
     if (onDeleteClass && classToDelete !== null) {
-      // Ensure the delete is saved immediately to localStorage
       onDeleteClass(classToDelete);
+      toast({
+        title: "Class Deleted",
+        description: "The class has been removed successfully",
+      });
     }
     setDeleteConfirmOpen(false);
     setClassToDelete(null);
@@ -61,13 +66,20 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   const handleSaveClass = (classData: Omit<Class, 'id'>) => {
     if (editClassData && onEditClass) {
-      // Ensure the edit is saved immediately to localStorage
       onEditClass(editClassData.id, classData);
       setEditClassData(null);
+      toast({
+        title: "Class Updated",
+        description: `${classData.name} has been updated successfully`,
+      });
     } else if (onAddClass) {
-      // Ensure the new class is saved immediately to localStorage
       onAddClass(classData);
+      toast({
+        title: "Class Added",
+        description: `${classData.name} has been added successfully`,
+      });
     }
+    setIsAddClassDialogOpen(false);
   };
 
   return (
@@ -95,7 +107,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </div>
         
         <div className="space-y-1">
-          {classes.map((classItem) => (
+          {initialClasses.map((classItem) => (
             <div 
               key={classItem.id} 
               className="flex items-center justify-between"

@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Class } from '@/data/mockData';
-import { useToast } from '@/hooks/use-toast';
 
 interface ClassFormProps {
   isOpen: boolean;
@@ -22,7 +21,6 @@ const ClassForm: React.FC<ClassFormProps> = ({
 }) => {
   const [name, setName] = useState(initialData?.name || '');
   const [grade, setGrade] = useState(initialData?.grade || '');
-  const { toast } = useToast();
 
   // Reset form when initialData changes
   useEffect(() => {
@@ -34,16 +32,9 @@ const ClassForm: React.FC<ClassFormProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Save changes immediately to localStorage
     onSave({
       name,
       grade
-    });
-    
-    toast({
-      title: initialData ? "Class Updated" : "Class Added",
-      description: `${name} has been ${initialData ? "updated" : "added"} successfully`,
     });
     
     // Reset form

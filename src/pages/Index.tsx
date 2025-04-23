@@ -172,49 +172,44 @@ const Index: React.FC = () => {
     setLocalClasses(prevClasses => {
       const maxId = Math.max(...prevClasses.map(c => c.id), 0);
       const newClass = { ...classData, id: maxId + 1 };
-      return [...prevClasses, newClass];
+      const updatedClasses = [...prevClasses, newClass];
+      localStorage.setItem(STORAGE_KEYS.CLASSES, JSON.stringify(updatedClasses));
+      return updatedClasses;
     });
-    
-    toast({
-      title: "Class Added",
-      description: `${classData.name} has been added successfully`,
-    });
-  }, [toast]);
+  }, []);
 
   const handleEditClass = useCallback((id: number, classData: Omit<Class, 'id'>) => {
-    setLocalClasses(prevClasses => 
-      prevClasses.map(c => c.id === id ? { ...classData, id } : c)
-    );
+    setLocalClasses(prevClasses => {
+      const updatedClasses = prevClasses.map(c => c.id === id ? { ...classData, id } : c);
+      localStorage.setItem(STORAGE_KEYS.CLASSES, JSON.stringify(updatedClasses));
+      return updatedClasses;
+    });
     
-    if (selectedClass.id === id) {
+    if (selectedClass?.id === id) {
       setSelectedClass(prev => ({ ...classData, id }));
     }
-    
-    toast({
-      title: "Class Updated",
-      description: `${classData.name} has been updated successfully`,
-    });
-  }, [selectedClass, toast]);
+  }, [selectedClass]);
 
   const handleDeleteClass = useCallback((id: number) => {
-    setLocalClasses(prevClasses => prevClasses.filter(c => c.id !== id));
+    setLocalClasses(prevClasses => {
+      const updatedClasses = prevClasses.filter(c => c.id !== id);
+      localStorage.setItem(STORAGE_KEYS.CLASSES, JSON.stringify(updatedClasses));
+      return updatedClasses;
+    });
     
-    if (selectedClass.id === id) {
+    if (selectedClass?.id === id) {
       const remainingClasses = localClasses.filter(c => c.id !== id);
       if (remainingClasses.length > 0) {
         handleSelectClass(remainingClasses[0]);
       }
     }
     
-    setSchedule(prevSchedule => 
-      prevSchedule.filter(item => item.classId !== id)
-    );
-    
-    toast({
-      title: "Class Deleted",
-      description: "The class has been removed",
+    setSchedule(prevSchedule => {
+      const updatedSchedule = prevSchedule.filter(item => item.classId !== id);
+      localStorage.setItem(STORAGE_KEYS.SCHEDULE, JSON.stringify(updatedSchedule));
+      return updatedSchedule;
     });
-  }, [selectedClass, localClasses, handleSelectClass, toast]);
+  }, [selectedClass, localClasses, handleSelectClass]);
 
   const handleAddSubject = useCallback((subjectData: Omit<Subject, 'id'>) => {
     setLocalSubjects(prevSubjects => {
@@ -230,9 +225,10 @@ const Index: React.FC = () => {
   }, [toast]);
 
   const handleEditSubject = useCallback((id: number, subjectData: Omit<Subject, 'id'>) => {
-    setLocalSubjects(prevSubjects => 
-      prevSubjects.map(s => s.id === id ? { ...subjectData, id } : s)
-    );
+    setLocalSubjects(prevSubjects => {
+      const updatedSubjects = prevSubjects.map(s => s.id === id ? { ...subjectData, id } : s);
+      return updatedSubjects;
+    });
     
     toast({
       title: "Subject Updated",
@@ -243,9 +239,10 @@ const Index: React.FC = () => {
   const handleDeleteSubject = useCallback((id: number) => {
     setLocalSubjects(prevSubjects => prevSubjects.filter(s => s.id !== id));
     
-    setSchedule(prevSchedule => 
-      prevSchedule.filter(item => item.subjectId !== id)
-    );
+    setSchedule(prevSchedule => {
+      const updatedSchedule = prevSchedule.filter(item => item.subjectId !== id);
+      return updatedSchedule;
+    });
     
     toast({
       title: "Subject Deleted",
