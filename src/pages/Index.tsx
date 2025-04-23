@@ -1,14 +1,18 @@
+
 import React, { useState, useCallback, useEffect } from 'react';
 import Sidebar from '@/components/Sidebar';
 import Timetable from '@/components/Timetable';
+import TimetableGenerationProcess from '@/components/TimetableGenerationProcess';
 import { classes as initialClasses, Class, subjects as initialSubjects, Subject, generateSchedule, defaultSchedule, ScheduleItem } from '@/data/mockData';
 import { useToast } from '@/hooks/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const STORAGE_KEYS = {
   CLASSES: 'asc-schedule-classes',
   SUBJECTS: 'asc-schedule-subjects',
   SCHEDULE: 'asc-schedule-items',
-  SELECTED_CLASS: 'asc-selected-class'
+  SELECTED_CLASS: 'asc-selected-class',
+  ACTIVE_TAB: 'asc-active-tab'
 };
 
 const Index: React.FC = () => {
@@ -34,6 +38,11 @@ const Index: React.FC = () => {
     const saved = localStorage.getItem(STORAGE_KEYS.SCHEDULE);
     return saved ? JSON.parse(saved) : defaultSchedule;
   });
+
+  const [activeTab, setActiveTab] = useState<string>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.ACTIVE_TAB);
+    return saved || "timetable";
+  });
   
   const { toast } = useToast();
 
@@ -52,6 +61,10 @@ const Index: React.FC = () => {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.SELECTED_CLASS, String(selectedClass.id));
   }, [selectedClass]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.ACTIVE_TAB, activeTab);
+  }, [activeTab]);
 
   const handleSelectClass = useCallback((classItem: Class) => {
     setSelectedClass(classItem);
@@ -259,17 +272,34 @@ const Index: React.FC = () => {
         onEditClass={handleEditClass}
         onDeleteClass={handleDeleteClass}
       />
-      <Timetable 
-        selectedClass={selectedClass} 
-        schedule={schedule}
-        onRefreshSchedule={handleRefreshSchedule}
-        onDeleteItem={handleDeleteItem}
-        onAddItem={handleAddItem}
-        onMoveItem={handleMoveItem}
-        onAddSubject={handleAddSubject}
-        onEditSubject={handleEditSubject}
-        onDeleteSubject={handleDeleteSubject}
-      />
+      <div className="flex-1 overflow-auto">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <div className="p-4">
+            <TabsList className="grid w-full md:w-1/3 grid-cols-2">
+              <TabsTrigger value="timetable">Timetable View</TabsTrigger>
+              <TabsTrigger value="process">Generation Process</TabsTrigger>
+            </TabsList>
+          </div>
+          
+          <TabsContent value="timetable" className="m-0">
+            <Timetable 
+              selectedClass={selectedClass} 
+              schedule={schedule}
+              onRefreshSchedule={handleRefreshSchedule}
+              onDeleteItem={handleDeleteItem}
+              onAddItem={handleAddItem}
+              onMoveItem={handleMoveItem}
+              onAddSubject={handleAddSubject}
+              onEditSubject={handleEditSubject}
+              onDeleteSubject={handleDeleteSubject}
+            />
+          </TabsContent>
+          
+          <TabsContent value="process" className="p-4 m-0">
+            <TimetableGenerationProcess />
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 };
